@@ -35,3 +35,4 @@ public class Spawner : MonoBehaviour
         Instantiate(_enemyPrefab, spawnPos, Quaternion.identity);
     }
 }
+
