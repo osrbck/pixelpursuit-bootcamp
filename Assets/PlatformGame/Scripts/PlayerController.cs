@@ -6,47 +6,29 @@ namespace PlatformGame
 {
     public class PlayerController : MonoBehaviour
     {
+        private PlayerData _data;
+        private PlayerAgent _agent;
+
         [SerializeField] private Rigidbody2D _rigidbody;
-
-        [SerializeField] private Animator _animator;
-
-        [SerializeField] private SpriteRenderer _spriteRenderer;
-
-        [SerializeField] private AudioSource _audioSource;
 
         [SerializeField] private AudioClip _pickUpClip;
 
         [SerializeField] private Transform _groundGizmo;
 
-        [SerializeField] private float _moveSpeed;
-
-        [SerializeField] private float _jumpForce;
-
         [SerializeField] private bool _isGrounded;
-
-        [SerializeField] private int _collected;
 
 
         private void Start()
         {
+            _data = GetComponent<PlayerData>();
+            _agent = GetComponent<PlayerAgent>();
+
             if (_rigidbody == null)
                 _rigidbody = GetComponent<Rigidbody2D>();
-
-            if (_animator == null)
-                _animator = GetComponent<Animator>();
-
-            if (_spriteRenderer == null)
-                _spriteRenderer = GetComponent<SpriteRenderer>();
 
             if (_groundGizmo == null)
                 _groundGizmo = transform.Find("Gizmo");
             // _groundGizmo = GetComponentInChildren<Transform>();
-
-            if (_audioSource == null)
-                _audioSource = GetComponent<AudioSource>();
-
-            _collected = 0;
-
 
         }
 
@@ -59,45 +41,37 @@ namespace PlatformGame
 
             float moveX = Input.GetAxis("Horizontal");
 
-            if (moveX < 0f)
-                _spriteRenderer.flipX = true;
+            //if (moveX < 0f)
+            //    _spriteRenderer.flipX = true;
 
-            else
-                _spriteRenderer.flipX = false;
+            //else
+            //    _spriteRenderer.flipX = false;
 
 
             if (_isGrounded && (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)))
             {
-                _rigidbody.AddForce(Vector2.up * _jumpForce * Time.fixedDeltaTime, ForceMode2D.Impulse);
+                _rigidbody.AddForce(Vector2.up * _data.JumpSpeed * Time.fixedDeltaTime, ForceMode2D.Impulse);
+                _isGrounded = false;
+                _agent.Jump();
 
-                _animator.SetTrigger("Jump");
             }
 
             //MOVEMENT
             //gravity info should be added at the end (0f)
-            Vector2 newVelocity = new Vector2(moveX * _moveSpeed * Time.fixedDeltaTime, _rigidbody.velocity.y);
-
+            Vector2 newVelocity = new Vector2(moveX * _data.MoveSpeed * Time.fixedDeltaTime, _rigidbody.velocity.y);
             _rigidbody.velocity = newVelocity;
 
-            if (_rigidbody.velocity.y < 0f)
-                _animator.SetBool("isFalling", true);
+            _agent.Move(_rigidbody.velocity);
 
-            else
-                _animator.SetBool("isFalling", false);
-
-            if (_rigidbody.velocity.x != 0f)
-                _animator.SetBool("isWalking", true);
-
-            else
-                _animator.SetBool("isWalking", false);
+            
         }
 
         void OnTriggerEnter2D(Collider2D collision)
         {
             if (collision.tag == "Coin")
             {
-                _collected += collision.GetComponent<PickUp>().GetPickUp();
-                _audioSource.PlayOneShot(_pickUpClip);
+                _data.isCollected += collision.GetComponent<PickUp>().GetPickUp();
+                AudioManager.Instance.PlaySound(_pickUpClip);
             }
         }
     }
