@@ -46,13 +46,11 @@ namespace PlatformGame
                 _animator.SetBool("isWalking", false);
         }
 
-        private void Update()
+        public void StopAnimations()
         {
-
-          
-
-
-         
+            _animator.SetBool("isFalling", false);
+            _animator.SetBool("isWalking", false);
+            _animator.playbackTime = 0f;
         }
     }
 }

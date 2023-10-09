@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace PlatformGame
 {
 
-    public class UISettings : MonoBehaviour
+    public class UISettings : CustomBehaviur
     {
         public Toggle MuteMusicToggle;
         public Toggle MuteSfxToggle;
@@ -17,49 +17,72 @@ namespace PlatformGame
         public Slider SfxVolumeSlider;
 
         public GameObject OptionsPanel;
+        public GameObject LevelCompletePanel;
         // Start is called before the first frame update
-        void Start()
+    
+
+        public override void Init(GameManager gameManager)
         {
-            if (AudioManager.Instance.IsMusicMuted)
+            base.Init(gameManager);
+
+            if (gameManager.audioPlayer.IsMusicMuted)
                 MuteMusicToggle.isOn = true;
             else
                 MuteMusicToggle.isOn = false;
 
-            if (AudioManager.Instance.IsSoundMuted)
+            if (gameManager.audioPlayer.IsSoundMuted)
                 MuteSfxToggle.isOn = true;
             else
                 MuteSfxToggle.isOn = false;
 
-            MusicVolumeSlider.value = AudioManager.Instance.MusicVolume;
-            SfxVolumeSlider.value = AudioManager.Instance.SoundValume;
+            MusicVolumeSlider.value = gameManager.audioPlayer.MusicVolume;
+            SfxVolumeSlider.value = gameManager.audioPlayer.SoundValume;
 
-            MusicVolumeSlider.onValueChanged.AddListener(delegate { MusicVolumeChange();});
+            MusicVolumeSlider.onValueChanged.AddListener(delegate { MusicVolumeChange(); });
             SfxVolumeSlider.onValueChanged.AddListener(delegate { SfxVolumeChange(); });
 
             MuteMusicToggle.onValueChanged.AddListener(delegate { MuteMusic(); });
-            MuteSfxToggle.onValueChanged.AddListener(delegate { MuteSfx(); }); 
+            MuteSfxToggle.onValueChanged.AddListener(delegate { MuteSfx(); });
 
             OptionsPanel.SetActive(false);
+            LevelCompletePanel.SetActive(false);
 
+            _gameManager.OnLevelComplated += OpenLevelFinishedPanel;
+        }
+
+        private void OnDestroy()
+        {
+            _gameManager.OnLevelComplated += OpenLevelFinishedPanel;
+        }
+
+        private void OpenLevelFinishedPanel()
+        {
+            LevelCompletePanel.SetActive(true);
         }
 
         public void MusicVolumeChange()
         {
-            AudioManager.Instance.MusicVolume = MusicVolumeSlider.value;
+            _gameManager.audioPlayer.MusicVolume = MusicVolumeSlider.value;
         }
 
         public void SfxVolumeChange()
         {
-            AudioManager.Instance.SoundValume = SfxVolumeSlider.value;
+            _gameManager.audioPlayer.SoundValume = SfxVolumeSlider.value;
         }
 
         public void MuteMusic()
         {
-            AudioManager.Instance.IsMusicMuted = MuteMusicToggle.isOn;
+            _gameManager.audioPlayer.IsMusicMuted = MuteMusicToggle.isOn;
         }
         public void MuteSfx()
         {
-            AudioManager.Instance.IsSoundMuted = MuteSfxToggle.isOn;
+            _gameManager.audioPlayer.IsSoundMuted = MuteSfxToggle.isOn;
+        }
+
+        public void GotoNextLevel()
+        {
+            _gameManager.GoToNextLevel();
+            LevelCompletePanel.SetActive(false);
         }
     }
 }

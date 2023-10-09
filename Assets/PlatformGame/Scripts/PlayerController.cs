@@ -1,12 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace PlatformGame
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : CustomBehaviur
     {
         private PlayerData _data;
+        public PlayerData Data { get { return _data; } }
         private PlayerAgent _agent;
 
         [SerializeField] private Rigidbody2D _rigidbody;
@@ -16,6 +18,8 @@ namespace PlatformGame
         [SerializeField] private Transform _groundGizmo;
 
         [SerializeField] private bool _isGrounded;
+
+        [SerializeField] private bool _isPaused;
 
 
         private void Start()
@@ -30,10 +34,40 @@ namespace PlatformGame
                 _groundGizmo = transform.Find("Gizmo");
             // _groundGizmo = GetComponentInChildren<Transform>();
 
+            _isPaused = false;
+
+        }
+
+        public override void Init(GameManager gameManager)
+        {
+            base.Init(gameManager);
+            _gameManager = gameManager;
+            _gameManager.OnLevelStarted += StartNewLevel;
+            _gameManager.OnLevelComplated+= LevelFinished;
+        }
+        private void OnDestroy()
+        {
+            _gameManager.OnLevelStarted -= StartNewLevel;
+            _gameManager.OnLevelComplated -= LevelFinished;
+        }
+
+        private void StartNewLevel()
+        {
+            _data.isCollected = 0;
+            transform.position = Vector3.zero;
+            _agent.StopAnimations();
+            _isPaused = false;
+        }
+        private void LevelFinished()
+        {
+            _isPaused = true;
         }
 
         void FixedUpdate()
         {
+            if (_isPaused)
+                return;
+
             //JUMP
             int layerMask = LayerMask.GetMask("Floor");
 
@@ -71,7 +105,12 @@ namespace PlatformGame
             if (collision.tag == "Coin")
             {
                 _data.isCollected += collision.GetComponent<PickUp>().GetPickUp();
-                AudioManager.Instance.PlaySound(_pickUpClip);
+                _gameManager.audioPlayer.PlaySound(_pickUpClip);
+            }
+
+            else if(collision.tag == "Finish")
+            {
+                _gameManager.CheckIfLevelEnded();
             }
         }
     }
