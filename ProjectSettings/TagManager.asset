@@ -8,6 +8,7 @@ TagManager:
   - Bullet
   - Platform
   - Coin
+  - Selectable
   layers:
   - Default
   - TransparentFX
