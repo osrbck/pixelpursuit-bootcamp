@@ -9,6 +9,7 @@ TagManager:
   - Platform
   - Coin
   - Selectable
+  - MatchBox
   layers:
   - Default
   - TransparentFX
