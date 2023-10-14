@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform _pool;
     [SerializeField] private Transform _matchPool;
 
+
     [SerializeField] private GameObject[] _itemPrefabs;
 
     [SerializeField] private int _coupleCount;
@@ -16,16 +17,19 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Camera _gameCam;
 
-    private SelectObj _selectObj;
-    private Vector3 _screenPoint;
-    private Vector3 _offset;
+    //private SelectObj _selectObj;
+    //private Vector3 _screenPoint;
+    //private Vector3 _offset;
 
     public event Action<SelectObj> OnItemEntersBox;
     public event Action<SelectObj> OnItemLeavesBox;
 
     [SerializeField] private List<SelectObj> _itemsInsideBox;
 
-
+    public Camera GameCamera
+    {
+        get { return _gameCam; }
+    }
 
     private void Start()
     {
@@ -69,6 +73,7 @@ public class GameManager : MonoBehaviour
         return position;
     }
 
+    /*
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -100,7 +105,7 @@ public class GameManager : MonoBehaviour
             _selectObj.transform.position = currentPosition;
         }
     }
-
+    */
 
     private void ItemLeavesBox(SelectObj item)
     {
