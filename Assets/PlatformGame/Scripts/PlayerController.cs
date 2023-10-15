@@ -75,12 +75,6 @@ namespace PlatformGame
 
             float moveX = Input.GetAxis("Horizontal");
 
-            //if (moveX < 0f)
-            //    _spriteRenderer.flipX = true;
-
-            //else
-            //    _spriteRenderer.flipX = false;
-
 
             if (_isGrounded && (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)))
             {
