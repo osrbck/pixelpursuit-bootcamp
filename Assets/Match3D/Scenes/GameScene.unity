@@ -396,6 +396,7 @@ MonoBehaviour:
   _coupleCount: 10
   _matchCount: 0
   _gameCam: {fileID: 0}
+  _itemsInsideBox: []
 --- !u!4 &518024537
 Transform:
   m_ObjectHideFlags: 0
@@ -969,7 +970,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1592851942}
   - component: {fileID: 1592851943}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Trigger
   m_TagString: MatchBox
   m_Icon: {fileID: 0}
